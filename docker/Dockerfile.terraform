@@ -1,0 +1,8 @@
+FROM hashicorp/terraform:1.9.5
+
+# Paquetes útiles: bash, curl, jq, git, graphviz; AWS CLI via pip
+RUN apk add --no-cache bash curl jq git graphviz python3 py3-pip \
+  && (apk add --no-cache aws-cli || pip install --no-cache-dir --break-system-packages awscli) \
+  && mkdir -p /work
+
+WORKDIR /work
