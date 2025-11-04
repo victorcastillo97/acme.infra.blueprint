@@ -1,0 +1,48 @@
+name: Deploy — Networking
+
+on:
+  push:
+    paths:
+      - 'terraform/stacks/dev/networking/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: networking-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tf-dev:
+    name: Terraform plan/apply (networking)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/stacks/dev/networking
+    env:
+      AWS_REGION: us-east-2
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Configurar AWS (OIDC -> rol dev)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: terraform init
+        run: make tf.init STACK=networking
+
+      - name: terraform plan
+        run: make tf.plan STACK=networking 
+
+      - name: terraform apply
+        run: make tf.apply STACK=networking
