@@ -7,7 +7,7 @@ DOCKER_COMMAND = docker run --rm -it \
 	-e AWS_PROFILE="$(AWS_PROFILE)" \
 	-e TF_VAR_owner=$(OWNER) \
 	-e TF_VAR_env=$(ENV) \
-	-e TF_VAR_region=$(REGION) \
+	-e TF_VAR_region=$(REGION)
 
 build: ## Build image for development: make build.image
 	@docker build -t $(IMAGE) -f docker/Dockerfile.terraform .
