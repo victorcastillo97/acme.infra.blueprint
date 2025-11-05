@@ -4,6 +4,8 @@ include makefiles/tf-backend.mk
 include makefiles/tf-vpc.mk
 include makefiles/tf-eks.mk
 include makefiles/tf-eks-lb-controller.mk
+include makefiles/tf-ecr.mk
+
 
 OWNER          	= acme
 ENV             ?= dev
