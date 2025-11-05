@@ -7,15 +7,11 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "plan | apply | destroy"
+        description: "apply | destroy"
         required: true
-        default: "plan"
+        default: "apply"
         type: choice
-        options: ["plan","apply","destroy"]
-      confirm_destroy:
-        description: "Si action=destroy, escribe EXACTAMENTE: destroy-lb-dev"
-        required: false
-        type: string
+        options: ["apply","destroy"]
   
 permissions:
   id-token: write
@@ -27,9 +23,7 @@ concurrency:
 
 jobs:
   tf-dev:
-    # En push: se asume "plan".
-    # En workflow_dispatch: usa lo elegido en inputs.action.
-    name: Terraform (${{ github.event_name == 'push' && 'plan' || inputs.action }}) (eks lb controller/dev)
+    name: Terraform (${{ github.event_name == 'push' && 'apply' || inputs.action }}) (eks lb controller/dev)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -58,17 +52,10 @@ jobs:
       - name: terraform init
         run: make tf-lb-controller.init OS_TARGET=linux
 
-      # PLAN: corre si es push (por paths) o si en dispatch elegiste "plan"
-      - name: terraform plan
-        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'plan') }}
-        run: make tf-lb-controller.plan OS_TARGET=linux
-
-      # APPLY: solo en dispatch con action=apply
       - name: terraform apply
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'apply' }}
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply') }}
         run: make tf-lb-controller.apply OS_TARGET=linux
 
-      # DESTROY: solo en dispatch con action=destroy y confirmación exacta
-      - name: terraform destroy (confirmado)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'destroy' && inputs.confirm_destroy == 'destroy-lb-dev' }}
+      - name: terraform destroy
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'destroy' }}
         run: make tf-lb-controller.destroy OS_TARGET=linux
