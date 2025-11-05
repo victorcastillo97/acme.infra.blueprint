@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EKS Demo — NGINX</title>
+</head>
+<body>
+  <main>
+    <h1>NGINX en EKS — Pod</h1>
+    <p>Este pod sirve contenido estático y muestra su <em>hostname</em> y el nombre del pod.</p>
+    <ul>
+      <li><strong>HOSTNAME:</strong> ${HOSTNAME}</li>
+      <li><strong>POD_NAME:</strong> ${POD_NAME}</li>
+      <li>/health → 200</li>
+    </ul>
+  </main>
+</body>
+</html>

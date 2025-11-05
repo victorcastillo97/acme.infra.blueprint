@@ -1,0 +1,9 @@
+.git
+.github
+docs
+k8s
+dist
+.rendered
+*.md
+*.zip
+.env
