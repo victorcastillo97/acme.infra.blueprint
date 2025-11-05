@@ -41,3 +41,7 @@ ecr.login.linux: envs.linux ## Login for the repository ECR in AWS.: make ecr.lo
 	@aws ecr get-login-password --region ${REGION} | \
 	docker login --username AWS --password-stdin \
 	${PATH_ECR}
+
+ecr.push.app.linux: envs.linux ## Create the ECR repository and host the image there for app.: make ecr.push.app
+	@ make ecr.tag.image IMAGE=${IMAGE_PROJECT}
+	@ docker push ${PATH_ECR}/${IMAGE_PROJECT}
