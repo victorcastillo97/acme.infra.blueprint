@@ -1,10 +1,18 @@
 
 
+OS_TARGET ?= win
+
+# ====== Ruta de credenciales en host ======
+ifeq ($(OS_TARGET),linux)
+  PATH_AWS_CREDENTIALS_HOST ?= $(HOME)/.aws
+else
+  PATH_AWS_CREDENTIALS_HOST ?= ${PATH_AWS_CREDENTIALS}
+endif
+
+
 DOCKER_COMMAND = docker run --rm -i \
 	-v "$(CURDIR):/work" \
-	-e AWS_ACCESS_KEY_ID \
-	-e AWS_SECRET_ACCESS_KEY \
-	-e AWS_SESSION_TOKEN \
+	-v "$(PATH_AWS_CREDENTIALS_HOST):/root/.aws:ro" \
 	-e AWS_DEFAULT_REGION="$(REGION)" \
 	-e AWS_PROFILE="$(AWS_PROFILE)" \
 	-e TF_VAR_owner=$(OWNER) \
@@ -19,6 +27,9 @@ shell:
 	--entrypoint /bin/bash \
 	$(IMAGE)
 	  
+show:
+	@ echo ${PATH_AWS_CREDENTIALS_HOST}
+
 execute:
 	@ ${DOCKER_COMMAND} \
 	--entrypoint /bin/bash \

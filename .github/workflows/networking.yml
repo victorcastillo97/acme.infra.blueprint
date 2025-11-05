@@ -44,11 +44,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ${{ env.AWS_REGION }}
 
+      - name: show values
+        run: make show AWS_PROFILE=default OS_TARGET=linux
+
       - name: terraform init
-        run: make tf-network.init AWS_PROFILE=default
+        run: make tf-network.init AWS_PROFILE=default OS_TARGET=linux
 
       - name: terraform plan
-        run: make tf-network.plan AWS_PROFILE=default
+        run: make tf-network.plan AWS_PROFILE=default OS_TARGET=linux
 
       - name: terraform apply
-        run: make tf-network.apply AWS_PROFILE=default
+        run: make tf-network.apply AWS_PROFILE=default OS_TARGET=linux
