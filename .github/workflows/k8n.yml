@@ -62,3 +62,8 @@ jobs:
 
       - name: apply hpa
         run: kubectl apply -f ./k8n/hpa.yaml
+      
+      - run: kubectl -n demo get all
+      - run: kubectl -n demo get pods
+      - run: kubectl -n demo describe ingress web
+      
