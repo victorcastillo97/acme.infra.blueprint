@@ -31,7 +31,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.8
-
+      
       - name: Configurar AWS (Access Keys)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -39,11 +39,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ${{ env.AWS_REGION }}
 
+      - name: show values
+        run: make show OS_TARGET=linux
+
       - name: terraform init
-        run: make tf-lb-controller.init
+        run: make tf-lb-controller.init OS_TARGET=linux
 
       - name: terraform plan
-        run: make tf-lb-controller.plan
+        run: make tf-lb-controller.plan OS_TARGET=linux
 
       - name: terraform apply
-        run: make tf-lb-controller.apply
+        run: make tf-lb-controller.apply OS_TARGET=linux

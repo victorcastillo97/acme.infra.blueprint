@@ -48,10 +48,10 @@ jobs:
         run: make show OS_TARGET=linux
 
       - name: terraform init
-        run: make tf-network.init AWS_PROFILE=default OS_TARGET=linux
+        run: make tf-network.init OS_TARGET=linux
 
       - name: terraform plan
-        run: make tf-network.plan AWS_PROFILE=default OS_TARGET=linux
+        run: make tf-network.plan OS_TARGET=linux
 
       - name: terraform apply
-        run: make tf-network.apply AWS_PROFILE=default OS_TARGET=linux
+        run: make tf-network.apply OS_TARGET=linux

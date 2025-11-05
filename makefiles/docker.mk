@@ -5,10 +5,10 @@ OS_TARGET ?= win
 # ====== Ruta de credenciales en host ======
 ifeq ($(OS_TARGET),linux)
   DOCKER_COMMAND = docker run --rm -i \
-  	-e AWS_ACCESS_KEY_ID \
+	-v "$(CURDIR):/work" \
+	-e AWS_ACCESS_KEY_ID \
 	-e AWS_SECRET_ACCESS_KEY \
 	-e AWS_SESSION_TOKEN \
-	-v "$(CURDIR):/work" \
 	-e AWS_DEFAULT_REGION="$(REGION)" \
 	-e TF_VAR_owner=$(OWNER) \
 	-e TF_VAR_env=$(ENV) \

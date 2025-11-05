@@ -22,7 +22,7 @@ jobs:
       run:
         shell: bash
     env:
-      AWS_REGION: us-east-2 # ajusta si corresponde
+      AWS_REGION: us-east-2
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +30,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.8
-
+      
       - name: Configurar AWS (Access Keys)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -38,11 +38,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ${{ env.AWS_REGION }}
 
+      - name: show values
+        run: make show OS_TARGET=linux
+
       - name: terraform init
-        run: make tf-eks.init
+        run: make tf-eks.init OS_TARGET=linux
 
       - name: terraform plan
-        run: make tf-eks.plan
+        run: make tf-eks.plan OS_TARGET=linux
 
       - name: terraform apply
-        run: make tf-eks.apply
+        run: make tf-eks.apply OS_TARGET=linux
