@@ -1,4 +1,4 @@
-name: K8n config
+name: Kubernetes - manifest
 
 on:
   push:

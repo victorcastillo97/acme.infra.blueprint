@@ -1,4 +1,4 @@
-name: Deploy — EKS load balancer controller
+name: EKS — load balancer controller
 
 on:
   push:

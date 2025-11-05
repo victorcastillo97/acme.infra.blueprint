@@ -1,10 +1,17 @@
-name: Deploy — Networking
+name: Network — VPC
 
 on:
   push:
     paths:
       - 'terraform/stacks/dev/network/vpc/**'
   workflow_dispatch:
+    inputs:
+      action:
+        description: "apply | destroy"
+        required: true
+        default: "apply"
+        type: choice
+        options: ["apply","destroy"]
 
 permissions:
   id-token: write
@@ -16,7 +23,9 @@ concurrency:
 
 jobs:
   tf-dev:
-    name: Terraform plan/apply (networking)
+    # En push: se asume "apply".
+    # En workflow_dispatch: usa lo elegido en inputs.action.
+    name: Terraform (${{ github.event_name == 'push' && 'apply' || inputs.action }}) (networking/dev)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -45,8 +54,12 @@ jobs:
       - name: terraform init
         run: make tf-network.init OS_TARGET=linux
 
-      - name: terraform plan
-        run: make tf-network.plan OS_TARGET=linux
-
+      # APPLY: corre en push o si en dispatch elegiste "apply"
       - name: terraform apply
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply') }}
         run: make tf-network.apply OS_TARGET=linux
+
+      # DESTROY: solo en dispatch con action=destroy (sin confirmación)
+      - name: terraform destroy
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'destroy' }}
+        run: make tf-network.destroy OS_TARGET=linux
