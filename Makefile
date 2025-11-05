@@ -1,7 +1,9 @@
 .DEFAULT_GOAL := help
 include makefiles/docker.mk
 include makefiles/tf-backend.mk
-include makefiles/tf.mk
+include makefiles/tf-vpc.mk
+include makefiles/tf-eks.mk
+include makefiles/tf-eks-lb-controller.mk
 
 OWNER          	= acme
 ENV             ?= dev
