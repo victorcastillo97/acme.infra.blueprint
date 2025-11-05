@@ -5,6 +5,17 @@ on:
     paths:
       - 'k8n/**'
   workflow_dispatch:
+    inputs:
+      action:
+        description: "apply | diff | delete"
+        required: true
+        default: "apply"
+        type: choice
+        options: ["apply","diff","delete"]
+      confirm_delete:
+        description: "Si action=delete, escribe EXACTAMENTE: delete-k8n-dev"
+        required: false
+        type: string
 
 permissions:
   id-token: write
@@ -16,7 +27,9 @@ concurrency:
 
 jobs:
   tf-dev:
-    name: K8n apply
+    # En push: se asume "apply".
+    # En dispatch: usa lo elegido en inputs.action.
+    name: K8n ${{ github.event_name == 'push' && 'apply' || inputs.action }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,6 +37,7 @@ jobs:
     env:
       AWS_REGION: us-east-2
       CLUSTER_NAME: eks-acme-dev-us-east-2
+      NAMESPACE: demo
 
     steps:
       - uses: actions/checkout@v4
@@ -35,12 +49,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ${{ env.AWS_REGION }}
 
-      # Instala kubectl de forma limpia
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
         with:
-          # Usa 'latest' o fija la minor de tu cluster, p.ej. v1.33.2
-          version: 'latest'
+          version: 'latest' # o fija tu minor exacta, p.ej. v1.33.2
 
       - name: Configurar kubeconfig de EKS
         run: |
@@ -48,22 +60,69 @@ jobs:
           kubectl version --client --output=yaml
           kubectl get nodes
 
+      # ===== DIFF (dry-run de cambios) =====
+      - name: kubectl diff (namespace)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'diff' }}
+        run: kubectl diff -f ./k8n/namespace.yaml || true
+      - name: kubectl diff (deployment)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'diff' }}
+        run: kubectl diff -f ./k8n/deployment.yaml || true
+      - name: kubectl diff (service)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'diff' }}
+        run: kubectl diff -f ./k8n/service.yaml || true
+      - name: kubectl diff (ingress)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'diff' }}
+        run: kubectl diff -f ./k8n/ingress.yaml || true
+      - name: kubectl diff (hpa)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'diff' }}
+        run: kubectl diff -f ./k8n/hpa.yaml || true
+
+      # ===== APPLY =====
       - name: apply namespace
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply') }}
         run: kubectl apply -f ./k8n/namespace.yaml
 
       - name: apply deployment
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply') }}
         run: kubectl apply -f ./k8n/deployment.yaml
 
       - name: apply service
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply') }}
         run: kubectl apply -f ./k8n/service.yaml
 
       - name: apply ingress
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply') }}
         run: kubectl apply -f ./k8n/ingress.yaml
 
       - name: apply hpa
+        if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.action == 'apply') }}
         run: kubectl apply -f ./k8n/hpa.yaml
-      
-      - run: kubectl -n demo get all
-      - run: kubectl -n demo get pods
-      - run: kubectl -n demo describe ingress web
-      
+
+      # ===== DELETE (con confirmación) =====
+      - name: delete hpa (confirmado)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'delete' && inputs.confirm_delete == 'delete-k8n-dev' }}
+        run: kubectl delete -f ./k8n/hpa.yaml --ignore-not-found
+
+      - name: delete ingress (confirmado)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'delete' && inputs.confirm_delete == 'delete-k8n-dev' }}
+        run: kubectl delete -f ./k8n/ingress.yaml --ignore-not-found
+
+      - name: delete service (confirmado)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'delete' && inputs.confirm_delete == 'delete-k8n-dev' }}
+        run: kubectl delete -f ./k8n/service.yaml --ignore-not-found
+
+      - name: delete deployment (confirmado)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'delete' && inputs.confirm_delete == 'delete-k8n-dev' }}
+        run: kubectl delete -f ./k8n/deployment.yaml --ignore-not-found
+
+      - name: delete namespace (confirmado)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'delete' && inputs.confirm_delete == 'delete-k8n-dev' }}
+        run: kubectl delete -f ./k8n/namespace.yaml --ignore-not-found
+
+      # ===== Estado final =====
+      - name: Estado en namespace
+        if: always()
+        run: |
+          kubectl -n "${NAMESPACE}" get all || true
+          kubectl -n "${NAMESPACE}" get pods || true
+          kubectl -n "${NAMESPACE}" describe ingress web || true
