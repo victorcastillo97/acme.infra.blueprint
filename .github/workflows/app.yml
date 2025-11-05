@@ -25,7 +25,7 @@ jobs:
         working-directory: app/devops
     env:
       AWS_REGION: us-east-2
-      VERSION: v2.0.0
+      VERSION: v1.0.0
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

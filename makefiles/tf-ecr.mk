@@ -3,7 +3,7 @@ STACK_ECR 		= ecr
 
 TYPE_APP        = web
 SERVICE_NAME    = identity
-ECR_NAME		= ${OWNER}-${TYPE_APP}-${SERVICE_NAME}-${ENV}-2
+ECR_NAME		= ${OWNER}-${TYPE_APP}-${SERVICE_NAME}-${ENV}
 
 tf-ecr.init:
 	@make execute \
