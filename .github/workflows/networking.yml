@@ -3,7 +3,7 @@ name: Deploy — Networking
 on:
   push:
     paths:
-      - 'terraform/stacks/dev/networking/**'
+      - 'terraform/stacks/dev/network/vpc/**'
 
 permissions:
   id-token: write
@@ -20,7 +20,6 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: terraform/stacks/dev/networking
     env:
       AWS_REGION: us-east-2
     steps:
@@ -40,10 +39,10 @@ jobs:
           aws-region:            ${{ env.AWS_REGION }}
 
       - name: terraform init
-        run: make tf.init STACK=networking
+        run: make tf-vpc.init
 
       - name: terraform plan
-        run: make tf.plan STACK=networking 
+        run: make tf-vpc.plan
 
       - name: terraform apply
-        run: make tf.apply STACK=networking
+        run: make tf-vpc.apply
