@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - 'terraform/stacks/dev/eks/lb-controller/**'
-
+  workflow_dispatch:
+  
 permissions:
   id-token: write
   contents: read

@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'terraform/stacks/dev/network/vpc/**'
+  workflow_dispatch:
 
 permissions:
   id-token: write
