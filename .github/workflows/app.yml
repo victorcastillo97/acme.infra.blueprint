@@ -39,7 +39,7 @@ jobs:
           aws-region:            ${{ env.AWS_REGION }}
 
       - name: Build image
-        run: make build.image IMAGE_TAG=${{ env.VERSION }}
+        run: make build.image IMAGE_TAG=${{ env.VERSION }}  OS_TARGET=linux
       
       - name: push image
-        run: make ecr.push.app IMAGE_TAG=${{ env.VERSION }} ENV=dev-2
+        run: make ecr.push.app IMAGE_TAG=${{ env.VERSION }} ENV=dev-2  OS_TARGET=linux
