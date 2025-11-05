@@ -1,0 +1,64 @@
+name: K8n config
+
+on:
+  push:
+    paths:
+      - 'k8n/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: k8n-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tf-dev:
+    name: K8n apply
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      AWS_REGION: us-east-2
+      CLUSTER_NAME: eks-acme-dev-us-east-2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar AWS (Access Keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      # Instala kubectl de forma limpia
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          # Usa 'latest' o fija la minor de tu cluster, p.ej. v1.33.2
+          version: 'latest'
+
+      - name: Configurar kubeconfig de EKS
+        run: |
+          aws eks update-kubeconfig --name "${CLUSTER_NAME}" --region "${AWS_REGION}"
+          kubectl version --client --output=yaml
+          kubectl get nodes
+
+      - name: apply namespace
+        run: kubectl apply -f ./k8n/namespace.yaml
+
+      - name: apply deployment
+        run: kubectl apply -f ./k8n/deployment.yaml
+
+      - name: apply service
+        run: kubectl apply -f ./k8n/service.yaml
+
+      - name: apply ingress
+        run: kubectl apply -f ./k8n/ingress.yaml
+
+      - name: apply hpa
+        run: kubectl apply -f ./k8n/hpa.yaml
