@@ -47,3 +47,6 @@ jobs:
       
       - name: terraform plan
         run: make tf-ecr.plan OS_TARGET=linux
+      
+      - name: terraform apply
+        run: make tf-ecr.apply OS_TARGET=linux
