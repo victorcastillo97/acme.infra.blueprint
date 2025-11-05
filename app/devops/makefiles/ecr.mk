@@ -22,11 +22,6 @@ ecr.login: envs ## Login for the repository ECR in AWS.: make ecr.login
 	docker login --username AWS --password-stdin \
 	${PATH_ECR}
 
-ecr.login.linux: envs ## Login for the repository ECR in AWS.: make ecr.login
-	@aws ecr get-login-password --region ${REGION} | \
-	docker login --username AWS --password-stdin \
-	${PATH_ECR}
-
 ecr.tag.image: envs ## Tag of image dockerized for the repository ECR.: make ecr.tag.image
 	@docker tag ${IMAGE} ${PATH_ECR}/${IMAGE}
 
@@ -37,3 +32,12 @@ ecr.push.app: ## Create the ECR repository and host the image there for app.: ma
 	@ make ecr.tag.image IMAGE=${IMAGE_PROJECT}
 	@ make ecr.push IMAGE=${IMAGE_PROJECT}
 
+
+envs.linux:
+	$(eval AWS_ACCOUNT_ID = $(shell aws sts get-caller-identity --query "Account" --output text))
+	$(eval PATH_ECR = ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com)
+
+ecr.login.linux: envs.linux ## Login for the repository ECR in AWS.: make ecr.login
+	@aws ecr get-login-password --region ${REGION} | \
+	docker login --username AWS --password-stdin \
+	${PATH_ECR}
