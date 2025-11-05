@@ -40,10 +40,10 @@ jobs:
           aws-region:            ${{ env.AWS_REGION }}
 
       - name: terraform init
-        run: make tf-vpc.init
+        run: make tf-network.init
 
       - name: terraform plan
-        run: make tf-vpc.plan
+        run: make tf-network.plan
 
       - name: terraform apply
-        run: make tf-vpc.apply
+        run: make tf-network.apply
