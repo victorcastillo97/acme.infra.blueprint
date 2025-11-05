@@ -1,0 +1,1 @@
+kubectl -n demo run fortio --image=fortio/fortio --restart=Never -- fortio load -c 50 -qps 0 -t 10m http://web.demo.svc.cluster.local/
