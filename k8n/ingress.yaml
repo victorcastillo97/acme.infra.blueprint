@@ -7,13 +7,13 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:312285871070:certificate/b3606e9f-24d1-43f4-8416-67756a0cacdf
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:312285871070:certificate/0acc01b0-ecdf-4d52-9b9b-e1221a880a2f
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/healthcheck-path: /
 spec:
   ingressClassName: alb
   rules:
-    - host: acme.placa-360.site
+    - host: acme-demo.placa-360.site
       http:
         paths:
           - path: /
