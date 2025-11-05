@@ -1,5 +1,13 @@
 # ACME Infra Blueprint (AWS EKS)
 
+## Arquitectura
+
+![Arquitectura EKS](./docs/diagram.png)
+
+> Diagrama de arquitectura completo en Draw.io:
+> **https://drive.google.com/file/d/1UYNDwY2zpmiTulDiQZPCx0bFsTOCwO0N/view?usp=sharing**
+
+
 Infra mínima para levantar:
 - **Backend de Terraform** en AWS (S3 + DynamoDB + KMS).
 - **Networking (VPC)** con subnets públicas/privadas etiquetadas para EKS.
