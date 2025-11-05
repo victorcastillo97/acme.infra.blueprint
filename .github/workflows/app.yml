@@ -1,0 +1,44 @@
+name: App
+
+on:
+  push:
+    paths:
+      - 'app/nginx/**'
+      - 'app/templates/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tf-dev:
+    name: app
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      AWS_REGION: us-east-2
+      ECR_NAME: acme-web-identity-dev-2
+      VERSION: v1.0.0
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configurar AWS (Access Keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: Build image
+        run: make build.image IMAGE_TAG=${{ env.VERSION }}
+      
+      - name: push image
+        run: make ecr.push.app IMAGE_TAG=${{ env.VERSION }} ENV=dev-2

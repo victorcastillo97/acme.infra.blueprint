@@ -20,8 +20,7 @@ tf-ecr.plan:
 	@make execute \
 	COMMAND="cd terraform/stacks/dev/${STACK_ECR} && \
 		terraform plan \
-		-var=ecr_name=$(ECR_NAME) \
-		-var-file=vars/$(ENV).tfvars"
+		-var=ecr_name=$(ECR_NAME)"
 
 
 tf-ecr.apply:
@@ -29,7 +28,6 @@ tf-ecr.apply:
 	COMMAND="cd terraform/stacks/dev/${STACK_ECR} && \
 		terraform apply \
 		-var=ecr_name=$(ECR_NAME) \
-		-var-file=vars/$(ENV).tfvars \
 		--auto-approve"
 
 
@@ -38,7 +36,6 @@ tf-ecr.destroy:
 	COMMAND="cd terraform/stacks/dev/${STACK_ECR} && \
 		terraform destroy \
 		-var=ecr_name=$(ECR_NAME) \
-		-var-file=vars/$(ENV).tfvars \
 		--auto-approve"
 
 
