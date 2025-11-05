@@ -29,6 +29,12 @@ shell:
 	  
 show:
 	@ echo ${PATH_AWS_CREDENTIALS_HOST}
+	@ ${DOCKER_COMMAND} \
+	--entrypoint /bin/bash \
+	$(IMAGE) \
+	-c "aws configure list" 
+	
+
 
 execute:
 	@ ${DOCKER_COMMAND} \
