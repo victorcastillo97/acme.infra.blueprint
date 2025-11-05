@@ -41,7 +41,7 @@ jobs:
       - name: Build image
         run: make build.image IMAGE_TAG=${{ env.VERSION }}  OS_TARGET=linux
       
-      - name: loginx
+      - name: login ecr
         run: make ecr.login.linux
       
       - name: push image

@@ -37,4 +37,3 @@ ecr.push.app: ## Create the ECR repository and host the image there for app.: ma
 	@ make ecr.tag.image IMAGE=${IMAGE_PROJECT}
 	@ make ecr.push IMAGE=${IMAGE_PROJECT}
 
-e
