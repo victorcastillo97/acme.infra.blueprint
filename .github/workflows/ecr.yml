@@ -1,0 +1,49 @@
+name: ECR - repository
+
+on:
+  push:
+    paths:
+      - 'terraform/stacks/dev/ecr/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ecr-repository-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tf-dev:
+    name: ecr-repository
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      AWS_REGION: us-east-2
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Build terraform image
+        run: make build
+        env:
+          IMAGE: acme-terraform:latest
+
+      - name: Configurar AWS (Access Keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: show values
+        run: make show OS_TARGET=linux
+
+      - name: terraform init
+        run: make tf-ecr.init OS_TARGET=linux
+      
+      - name: terraform plan
+        run: make tf-ecr.plan OS_TARGET=linux
