@@ -1,6 +1,6 @@
 
 
-DOCKER_COMMAND = docker run --rm -it \
+DOCKER_COMMAND = docker run --rm -i \
 	-v "$(CURDIR):/work" \
 	-v "$(PATH_AWS_CREDENTIALS):/root/.aws:ro" \
 	-e AWS_DEFAULT_REGION="$(REGION)" \
