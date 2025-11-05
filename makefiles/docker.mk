@@ -1,6 +1,6 @@
 
 
-DOCKER_COMMAND = docker run --rm -it \
+DOCKER_COMMAND = docker run --rm -i \
 	-v "$(CURDIR):/work" \
 	-e AWS_ACCESS_KEY_ID \
 	-e AWS_SECRET_ACCESS_KEY \
