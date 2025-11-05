@@ -45,7 +45,7 @@ jobs:
           aws-region:            ${{ env.AWS_REGION }}
 
       - name: show values
-        run: make show AWS_PROFILE=default OS_TARGET=linux
+        run: make show OS_TARGET=linux
 
       - name: terraform init
         run: make tf-network.init AWS_PROFILE=default OS_TARGET=linux
