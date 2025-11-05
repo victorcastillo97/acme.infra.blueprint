@@ -3,8 +3,8 @@ provider "aws" {
   
   default_tags {
     tags = {
-      owner = var.tag_owner
-      env   = var.tag_env
+      owner = var.owner
+      env   = var.env
     }
   }
 }
